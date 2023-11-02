@@ -49,7 +49,7 @@ Following steps are necessary to do so:
    You can do this via the JavaScript UI events.
 
    Here is an example:
-    ```javascript
+   ```javascript
    document.addEventListener(pimcore.events.prepareClassLayoutContextMenu, (e) => {
         if (e.detail.allowedTypes.root !== undefined) {
             e.detail.allowedTypes.root.push('myLayoutType');
