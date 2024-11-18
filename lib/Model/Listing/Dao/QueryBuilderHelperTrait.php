@@ -25,11 +25,24 @@ trait QueryBuilderHelperTrait
     /**
      * @var callable[]
      */
-    protected $onCreateQueryBuilderCallbackList = [];
+    protected array $queryBuilderProcessors = [];
 
     public function onCreateQueryBuilder(?callable $callback): void
     {
-        $this->onCreateQueryBuilderCallbackList[] = $callback;
+        if (is_callable($callback)) {
+            $this->discardQueryBuilderProcessors();
+            $this->addQueryBuilderProcessor($callback);
+        }
+    }
+
+    public function addQueryBuilderProcessor(callable $callback): void
+    {
+        $this->queryBuilderProcessors[] = $callback;
+    }
+
+    public function discardQueryBuilderProcessors(): void
+    {
+        $this->queryBuilderProcessors = [];
     }
 
     protected function applyListingParametersToQueryBuilder(QueryBuilder $queryBuilder): void
@@ -39,9 +52,9 @@ trait QueryBuilderHelperTrait
         $this->applyOrderByToQueryBuilder($queryBuilder);
         $this->applyLimitToQueryBuilder($queryBuilder);
 
-        $callbacks = array_filter($this->onCreateQueryBuilderCallbackList);
-        foreach ($callbacks as $callback) {
-            $callback($queryBuilder);
+        $callbacks = array_filter($this->queryBuilderProcessors);
+        foreach ($callbacks as $processor) {
+            $processor($queryBuilder);
         }
     }
 
