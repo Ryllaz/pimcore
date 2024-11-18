@@ -23,13 +23,13 @@ use Pimcore\Model\DataObject;
 trait QueryBuilderHelperTrait
 {
     /**
-     * @var callable|null
+     * @var callable[]
      */
-    protected $onCreateQueryBuilderCallback;
+    protected $onCreateQueryBuilderCallbackList = [];
 
     public function onCreateQueryBuilder(?callable $callback): void
     {
-        $this->onCreateQueryBuilderCallback = $callback;
+        $this->onCreateQueryBuilderCallbackList[] = $callback;
     }
 
     protected function applyListingParametersToQueryBuilder(QueryBuilder $queryBuilder): void
@@ -39,8 +39,8 @@ trait QueryBuilderHelperTrait
         $this->applyOrderByToQueryBuilder($queryBuilder);
         $this->applyLimitToQueryBuilder($queryBuilder);
 
-        $callback = $this->onCreateQueryBuilderCallback;
-        if (is_callable($callback)) {
+        $callbacks = array_filter($this->onCreateQueryBuilderCallbackList);
+        foreach ($callbacks as $callback) {
             $callback($queryBuilder);
         }
     }
