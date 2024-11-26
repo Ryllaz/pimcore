@@ -29,8 +29,8 @@ trait QueryBuilderHelperTrait
 
     public function onCreateQueryBuilder(?callable $callback): void
     {
+        $this->discardQueryBuilderProcessors();
         if (is_callable($callback)) {
-            $this->discardQueryBuilderProcessors();
             $this->addQueryBuilderProcessor($callback);
         }
     }
@@ -52,8 +52,7 @@ trait QueryBuilderHelperTrait
         $this->applyOrderByToQueryBuilder($queryBuilder);
         $this->applyLimitToQueryBuilder($queryBuilder);
 
-        $callbacks = array_filter($this->queryBuilderProcessors);
-        foreach ($callbacks as $processor) {
+        foreach ($this->queryBuilderProcessors as $processor) {
             $processor($queryBuilder);
         }
     }
